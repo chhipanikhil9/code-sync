@@ -1,0 +1,19 @@
+# General ignores
+.DS_Store
+*.log
+npm-debug.log*
+
+# Dependencies for BOTH client and server
+# This single line will ignore any node_modules folder it finds
+node_modules/
+
+# Server-specific ignores
+# Ignore the environment variables file in the server directory
+/server/.env
+
+# Client-specific ignores
+# Ignore the environment variables file in the client directory
+/client/.env
+
+# Ignore the build output directory for the Vite client
+/client/dist
