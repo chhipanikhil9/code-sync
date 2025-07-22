@@ -6,6 +6,7 @@ import http from 'http';
 import Room from './models/Room.model.js'
 import connectDb from './config/db.js';
 import roomRoutes from './routes/Room.route.js';
+import userRoutes from './routes/User.route.js'
 
 dotenv.config();
 connectDb();
@@ -28,7 +29,10 @@ const io = new Server(server, {
 // middleware
 app.use(cors());
 app.use(express.json());
+
+// api routes
 app.use('/api/rooms', roomRoutes);
+app.use('/api/users', userRoutes);
 
 // socket.io connection
 // io is a socket.io server instance and socket is a connection to a specific client
