@@ -1,53 +1,50 @@
 // client/src/pages/HomePage.jsx
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input'; // Import the new Input component
+import { Input } from '@/components/ui/input';
 import { toast } from 'react-toastify';
+import { useAuth } from '../context/AuthContext';
 
 const HomePage = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [roomId, setRoomId] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    // Function to create a new room
     const handleCreateRoom = async () => {
         setIsLoading(true);
         try {
+            // Ensure credentials (cookies) are sent with the request
+            axios.defaults.withCredentials = true;
             const response = await axios.post('http://localhost:3001/api/rooms/new');
-            if (response.status !== 201) {
-                toast.error('Failed to create a new code room.');
-                return;
-            }
+
             const { id } = response.data;
-            setRoomId(id);
-            // console.log('New room created with ID:', id);
             toast.success('New room created successfully!');
             navigate(`/rooms/${id}`);
         } catch (error) {
             console.error('Error creating new code room:', error);
+            toast.error('Could not create room. Please log in.');
+            setIsLoading(false);
         }
     };
 
-    // Function to join an existing room
     const handleJoinRoom = async (e) => {
         e.preventDefault();
         if (roomId.trim() === '') return;
         try {
+            // No credentials needed to check a room, so this is fine
             const response = await axios.get(`http://localhost:3001/api/rooms/${roomId}`);
             if (response.status === 200) {
                 toast.success('Joined the room successfully!');
                 navigate(`/rooms/${roomId}`);
-            } else {
-                toast.error('Room not found!');
-                setRoomId('');
-                navigate('/');
             }
         } catch (error) {
             console.error('Error joining room:', error);
-            toast.error('Failed to join room.');
+            toast.error('Room not found!');
+            setRoomId('');
         }
     };
 
@@ -63,7 +60,6 @@ const HomePage = () => {
                     </p>
                 </div>
 
-                {/* Form for joining a room */}
                 <form onSubmit={handleJoinRoom} className="space-y-4">
                     <div>
                         <Input
@@ -84,7 +80,6 @@ const HomePage = () => {
                     </Button>
                 </form>
 
-                {/* Divider */}
                 <div className="relative">
                     <div className="absolute inset-0 flex items-center">
                         <span className="w-full border-t dark:border-gray-600" />
@@ -96,18 +91,24 @@ const HomePage = () => {
                     </div>
                 </div>
 
-                {/* Button for creating a new room */}
-                <div>
-                    <Button
-                        onClick={handleCreateRoom}
-                        disabled={isLoading}
-                        className="w-full"
-                        variant="secondary"
-                        size="lg"
-                    >
-                        {isLoading ? 'Creating Session...' : 'Create New Room'}
-                    </Button>
-                </div>
+                {/* CONDITIONALLY RENDER THIS SECTION */}
+                {user ? (
+                    <div>
+                        <Button
+                            onClick={handleCreateRoom}
+                            disabled={isLoading}
+                            className="w-full"
+                            variant="secondary"
+                            size="lg"
+                        >
+                            {isLoading ? 'Creating Session...' : 'Create New Room'}
+                        </Button>
+                    </div>
+                ) : (
+                    <div className="text-center text-sm text-gray-500 dark:text-gray-400">
+                        <Link to="/login" className="font-medium text-indigo-500 hover:underline">Log in</Link> to create a new room.
+                    </div>
+                )}
             </div>
         </div>
     );

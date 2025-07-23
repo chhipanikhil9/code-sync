@@ -7,6 +7,11 @@ const roomSchema = new mongoose.Schema({
         required: true,
         unique: true
     },
+    user: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        ref: 'User' // This tells Mongoose that the ID stored here refers to a document in the 'User' collection
+    },
     code: {
         type: String,
         default: "// Start coding here..."
