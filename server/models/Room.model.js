@@ -19,6 +19,10 @@ const roomSchema = new mongoose.Schema({
     language: {
         type: String,
         default: 'javascript'
+    },
+    generatedQuestion: {
+        type: Object,
+        default: null
     }
 },{
     timestamps: true
