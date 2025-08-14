@@ -20,6 +20,8 @@ const roomSchema = new mongoose.Schema({
         type: String,
         default: 'javascript'
     }
+},{
+    timestamps: true
 });
 
 const Room = mongoose.model('Room', roomSchema);

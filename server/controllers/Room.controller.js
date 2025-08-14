@@ -1,7 +1,6 @@
 import Room from '../models/Room.model.js';
 import { v4 as uuidv4 } from 'uuid';
 
-// This is your existing getRoom function, it remains the same
 export const getRoom = async (req, res) => {
     try {
         const { id } = req.params;

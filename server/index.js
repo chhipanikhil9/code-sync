@@ -7,6 +7,7 @@ import Room from './models/Room.model.js'
 import connectDb from './config/db.js';
 import roomRoutes from './routes/Room.route.js';
 import userRoutes from './routes/User.route.js'
+import aiRoutes from './routes/Ai.route.js';
 import cookieParser from 'cookie-parser';
 
 dotenv.config();
@@ -39,6 +40,7 @@ app.use(cookieParser());
 // api routes
 app.use('/api/rooms', roomRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/ai', aiRoutes);
 
 // socket.io connection
 // io is a socket.io server instance and socket is a connection to a specific client
@@ -76,7 +78,7 @@ io.on('connection', (socket) => {
 
     socket.on('send-message', (data) => {
         // data = {roomId,message,user}
-        console.log(`[Socket.io] Received 'send-message' for room: ${data.roomId}`,data);
+        console.log(`[Socket.io] Received 'send-message' for room: ${data.roomId}`, data);
         io.to(data.roomId).emit('receive-message', {
             message: data.message,
             user: data.user,
