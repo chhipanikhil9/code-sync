@@ -21,7 +21,7 @@ const Header = () => {
     return (
         <header className="bg-gray-800 text-white p-4 flex justify-between items-center shadow-md">
             <Link to="/" className="text-xl font-bold">
-                CodeShare
+                CodeSync
             </Link>
             <nav>
                 {user ? (

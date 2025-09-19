@@ -1,4 +1,4 @@
-# code-share
+# code-sync
 ## This is to collab with the friends
 
 - Run server: 
@@ -16,4 +16,4 @@ npm run dev
 ```
 
 
-# CodeShare
+# CodeSync

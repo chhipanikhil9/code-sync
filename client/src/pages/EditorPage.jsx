@@ -146,7 +146,7 @@ const EditorPage = () => {
         <div className="flex flex-col h-screen bg-gray-900 text-white">
             <header className="flex items-center justify-between p-2 bg-gray-800 border-b border-gray-700 flex-shrink-0">
                 <div className="flex items-center gap-4">
-                    <h1 className="text-lg font-bold cursor-pointer" onClick={() => navigate('/')}>CodeShare</h1>
+                    <h1 className="text-lg font-bold cursor-pointer" onClick={() => navigate('/')}>CodeSync</h1>
                     <div className="flex items-center gap-2 bg-gray-700 p-1 rounded-md">
                         <span className="text-sm font-mono px-2">{roomId}</span>
                         <Button onClick={handleCopyRoomId} size="icon" variant="ghost"><Copy className="h-4 w-4" /></Button>
