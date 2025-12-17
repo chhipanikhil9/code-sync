@@ -27,7 +27,7 @@ export const generateQuestion = async (req, res) => {
     `;
 
     try {
-        const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${process.env.GEMINI_API_KEY}`;
+        const geminiApiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`;
 
         const requestBody = {
             contents: [{
@@ -61,6 +61,9 @@ export const generateQuestion = async (req, res) => {
         res.status(200).json(jsonResponse);
 
     } catch (error) {
+        if (error.response) {
+            console.error("AI API Error Data:", JSON.stringify(error.response.data, null, 2));
+        }
         console.error("Error calling AI API or parsing response:", error.message);
         res.status(500).json({ message: 'Failed to generate question from AI service.' });
     }
