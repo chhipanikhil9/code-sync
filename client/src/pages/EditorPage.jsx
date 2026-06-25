@@ -9,7 +9,7 @@ import Header from '../components/Header';
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Copy } from 'lucide-react';
+import { Copy, Play } from 'lucide-react';
 
 const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_SERVER_URL || 'http://localhost:3001';
 const AUTOSAVE_DELAY = 2000;

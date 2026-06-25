@@ -2,6 +2,8 @@
 .DS_Store
 *.log
 npm-debug.log*
+/.vscode
+*.md
 
 # Dependencies for BOTH client and server
 # This single line will ignore any node_modules folder it finds
