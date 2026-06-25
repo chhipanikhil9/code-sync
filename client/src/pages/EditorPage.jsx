@@ -5,33 +5,25 @@ import { io } from 'socket.io-client';
 import Editor from '@monaco-editor/react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
+import Header from '../components/Header';
 
-import AIQuestionGenerator from '../components/AIQuestionGenerator';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Copy, Play, Loader2, Phone, PhoneOff, Mic, MicOff } from 'lucide-react';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
+import { Copy } from 'lucide-react';
 
 const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_SERVER_URL || 'http://localhost:3001';
-const languages = ['javascript', 'python', 'java', 'cpp'];
 const AUTOSAVE_DELAY = 2000;
 
-const AudioPlayer = ({ stream }) => {
-    const audioRef = useRef(null);
+const renderValue = (value) => {
+    if (value === null || value === undefined) {
+        return '';
+    }
 
-    useEffect(() => {
-        if (audioRef.current && stream) {
-            audioRef.current.srcObject = stream;
-        }
-    }, [stream]);
+    if (typeof value === 'string') {
+        return value;
+    }
 
-    return <audio ref={audioRef} autoPlay />;
+    return JSON.stringify(value, null, 2);
 };
 
 const QuestionDisplay = ({ question }) => {
@@ -56,8 +48,8 @@ const QuestionDisplay = ({ question }) => {
                 {Array.isArray(question.testCases) && question.testCases.map((tc, i) => (
                     <div key={i} className="bg-gray-900 p-3 rounded-md font-mono">
                         <p className="font-semibold">Example {i + 1}:</p>
-                        <code className="block whitespace-pre-wrap mt-1"><span className="text-gray-400">Input:</span> {tc.input}</code>
-                        <code className="block whitespace-pre-wrap mt-1"><span className="text-gray-400">Output:</span> {tc.output}</code>
+                        <code className="block whitespace-pre-wrap mt-1"><span className="text-gray-400">Input:</span> {renderValue(tc.input)}</code>
+                        <code className="block whitespace-pre-wrap mt-1"><span className="text-gray-400">Output:</span> {renderValue(tc.output)}</code>
                     </div>
                 ))}
             </div>
@@ -368,77 +360,13 @@ const EditorPage = () => {
     };
 
     return (
-        <div className="flex flex-col h-screen bg-slate-950 text-slate-100 font-sans selection:bg-blue-500/30">
-            {/* Header */}
-            <header className="flex items-center justify-between px-6 py-3 bg-slate-900/80 backdrop-blur-md border-b border-slate-800 shadow-sm z-50">
-                <div className="flex items-center gap-6">
-                    <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
-                        <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                            <code className="font-bold text-lg">C</code>
-                        </div>
-                        <h1 className="text-xl font-bold tracking-tight bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">CodeSync</h1>
-                    </div>
-                    <div className="flex items-center gap-2 bg-slate-800/50 border border-slate-700/50 px-3 py-1.5 rounded-full text-xs font-medium text-slate-400 group hover:border-slate-600 transition-colors">
-                        <span>Room:</span>
-                        <span className="font-mono text-slate-200">{roomId}</span>
-                        <Button
-                            onClick={handleCopyRoomId}
-                            size="icon"
-                            variant="ghost"
-                            className="h-5 w-5 ml-1 hover:bg-slate-700 rounded-full"
-                        >
-                            <Copy className="h-3 w-3" />
-                        </Button>
-                    </div>
-                </div>
-
-                <div className="flex items-center gap-4">
-                    <AIQuestionGenerator onQuestionGenerated={handleQuestionGenerated} />
-
-                    <div className="h-8 w-[1px] bg-slate-800 mx-2"></div>
-
-                    <Select value={language} onValueChange={handleLanguageSelect}>
-                        <SelectTrigger className="w-[140px] bg-slate-800 border-slate-700 text-slate-200 focus:ring-blue-500/50 h-9">
-                            <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent className="bg-slate-800 border-slate-700">
-                            {languages.map(lang => (
-                                <SelectItem key={lang} value={lang} className="focus:bg-slate-700 text-slate-200 cursor-pointer">
-                                    {lang.charAt(0).toUpperCase() + lang.slice(1)}
-                                </SelectItem>
-                            ))}
-                        </SelectContent>
-                    </Select>
-
-                    <Button
-                        onClick={handleRunCode}
-                        disabled={isRunning}
-                        className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 text-white shadow-lg shadow-green-900/20 border-0 h-9 px-6 transition-all"
-                    >
-                        {isRunning ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Play className="w-4 h-4 mr-2 fill-current" />}
-                        Run
-                    </Button>
-
-                    <Button
-                        variant={isVoiceJoined ? "destructive" : "secondary"}
-                        onClick={isVoiceJoined ? leaveVoice : joinVoice}
-                        className={`h-9 border-0 transition-all ${isVoiceJoined ? 'bg-red-500/20 text-red-400 hover:bg-red-500/30' : 'bg-slate-800 text-slate-300 hover:bg-slate-700'}`}
-                    >
-                        {isVoiceJoined ? <PhoneOff className="w-4 h-4 mr-2" /> : <Phone className="w-4 h-4 mr-2" />}
-                        {isVoiceJoined ? 'Leave Voice' : 'Join Voice'}
-                    </Button>
-
-                    {user && (
-                        <Button
-                            variant="ghost"
-                            onClick={logout}
-                            className="text-slate-400 hover:text-red-400 hover:bg-red-950/30 h-9"
-                        >
-                            Logout
-                        </Button>
-                    )}
-                </div>
-            </header>
+        <div className="flex flex-col h-screen bg-gray-900 text-white">
+            <Header
+                roomId={roomId}
+                language={language}
+                onLanguageChange={handleLanguageSelect}
+                onQuestionGenerated={handleQuestionGenerated}
+            />
 
             {/* Main Content Info */}
             <div className="flex flex-grow overflow-hidden relative">

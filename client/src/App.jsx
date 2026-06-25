@@ -6,7 +6,6 @@ import EditorPage from './pages/EditorPage'
 import LoginPage from './pages/LoginPage'
 import SignupPage from './pages/SignupPage'
 import { ToastContainer } from 'react-toastify'
-import Header from './components/Header'
 
 function App() {
   const location = useLocation();
@@ -26,7 +25,6 @@ function App() {
         pauseOnHover
         theme="dark"
       />
-      {!isEditorPage && <Header />}
       <Routes>
         <Route path='/' element={<HomePage />} />
         <Route path='/login' element={<LoginPage />} />
