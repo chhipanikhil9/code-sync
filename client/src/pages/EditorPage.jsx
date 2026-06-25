@@ -5,22 +5,26 @@ import { io } from 'socket.io-client';
 import Editor from '@monaco-editor/react';
 import { toast } from 'react-toastify';
 import { useAuth } from '../context/AuthContext';
+import Header from '../components/Header';
 
-import AIQuestionGenerator from '../components/AIQuestionGenerator';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Copy } from 'lucide-react';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select";
 
 const SOCKET_SERVER_URL = import.meta.env.VITE_SOCKET_SERVER_URL || 'http://localhost:3001';
-const languages = ['javascript', 'python', 'java', 'cpp'];
 const AUTOSAVE_DELAY = 2000;
+
+const renderValue = (value) => {
+    if (value === null || value === undefined) {
+        return '';
+    }
+
+    if (typeof value === 'string') {
+        return value;
+    }
+
+    return JSON.stringify(value, null, 2);
+};
 
 const QuestionDisplay = ({ question }) => {
     if (!question) {
@@ -44,8 +48,8 @@ const QuestionDisplay = ({ question }) => {
                 {Array.isArray(question.testCases) && question.testCases.map((tc, i) => (
                     <div key={i} className="bg-gray-900 p-3 rounded-md font-mono">
                         <p className="font-semibold">Example {i + 1}:</p>
-                        <code className="block whitespace-pre-wrap mt-1"><span className="text-gray-400">Input:</span> {tc.input}</code>
-                        <code className="block whitespace-pre-wrap mt-1"><span className="text-gray-400">Output:</span> {tc.output}</code>
+                        <code className="block whitespace-pre-wrap mt-1"><span className="text-gray-400">Input:</span> {renderValue(tc.input)}</code>
+                        <code className="block whitespace-pre-wrap mt-1"><span className="text-gray-400">Output:</span> {renderValue(tc.output)}</code>
                     </div>
                 ))}
             </div>
@@ -144,22 +148,12 @@ const EditorPage = () => {
 
     return (
         <div className="flex flex-col h-screen bg-gray-900 text-white">
-            <header className="flex items-center justify-between p-2 bg-gray-800 border-b border-gray-700 flex-shrink-0">
-                <div className="flex items-center gap-4">
-                    <h1 className="text-lg font-bold cursor-pointer" onClick={() => navigate('/')}>CodeSync</h1>
-                    <div className="flex items-center gap-2 bg-gray-700 p-1 rounded-md">
-                        <span className="text-sm font-mono px-2">{roomId}</span>
-                        <Button onClick={handleCopyRoomId} size="icon" variant="ghost"><Copy className="h-4 w-4" /></Button>
-                    </div>
-                </div>
-                <div className="flex items-center gap-4">
-                    <AIQuestionGenerator onQuestionGenerated={handleQuestionGenerated} />
-                    <Select value={language} onValueChange={handleLanguageSelect}>
-                        <SelectTrigger className="w-[180px] bg-gray-700 border-gray-600 text-white"><SelectValue /></SelectTrigger>
-                        <SelectContent>{languages.map(lang => <SelectItem key={lang} value={lang}>{lang.charAt(0).toUpperCase() + lang.slice(1)}</SelectItem>)}</SelectContent>
-                    </Select>
-                </div>
-            </header>
+            <Header
+                roomId={roomId}
+                language={language}
+                onLanguageChange={handleLanguageSelect}
+                onQuestionGenerated={handleQuestionGenerated}
+            />
 
             <div className="flex flex-grow overflow-hidden">
                 <div className="w-1/4 flex flex-col bg-gray-800 border-r border-gray-700">
