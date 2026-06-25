@@ -8,6 +8,7 @@ import connectDb from './config/db.js';
 import roomRoutes from './routes/Room.route.js';
 import userRoutes from './routes/User.route.js';
 import aiRoutes from './routes/AI.route.js';
+import executeRoutes from './routes/Execute.route.js';
 import cookieParser from 'cookie-parser';
 
 dotenv.config();
@@ -37,6 +38,7 @@ app.use(cookieParser());
 app.use('/api/rooms', roomRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/ai', aiRoutes);
+app.use('/api/execute', executeRoutes);
 
 const MAX_CLIENTS_PER_ROOM = 3;
 
@@ -78,7 +80,21 @@ io.on('connection', (socket) => {
 
     socket.on('code-change', (data) => socket.to(data.roomId).emit('receive-code-change', data.code));
     socket.on('language-change', (data) => socket.to(data.roomId).emit('receive-language-change', data.language));
+    socket.on('cursor-move', (data) => socket.to(data.roomId).emit('cursor-update', data));
     socket.on('send-message', (data) => io.to(data.roomId).emit('receive-message', data));
+
+    // WebRTC Signaling
+    socket.on('offer', (data) => {
+        socket.to(data.target).emit('offer', data);
+    });
+
+    socket.on('answer', (data) => {
+        socket.to(data.target).emit('answer', data);
+    });
+
+    socket.on('ice-candidate', (data) => {
+        socket.to(data.target).emit('ice-candidate', data);
+    });
 
     socket.on('save-code', async (data) => {
         try {

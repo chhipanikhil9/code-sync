@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes, useLocation } from 'react-router-dom'
 import { Edit } from 'lucide-react'
 import HomePage from './pages/HomePage'
 import EditorPage from './pages/EditorPage'
@@ -8,6 +8,9 @@ import SignupPage from './pages/SignupPage'
 import { ToastContainer } from 'react-toastify'
 
 function App() {
+  const location = useLocation();
+  const isEditorPage = location.pathname.startsWith('/rooms/');
+
   return (
     <>
       <ToastContainer
